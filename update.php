@@ -24,7 +24,7 @@
     <?php
         require_once "dbcon.php";
         
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if (isset($_POST["update"])) {
             $id = $_POST["id"];
             $fname = $_POST["fname"];
             $lname = $_POST["lname"]; 
@@ -59,7 +59,7 @@
                     First Name: <input type="text" name="fname" value="<?php echo $row["fname"]; ?>"><br><br>
                     Last Name: <input type="text" name="lname" value="<?php echo $row["lname"]; ?>"><br><br>
                     Position: <input type="text" name="position" value="<?php echo $row["position"]; ?>"><br><br>
-                    <input type="submit" name="submit" value="Update Employee">
+                    <input type="submit" name="update" value="Update Employee">
               </form>
               <?php
                 } else {
