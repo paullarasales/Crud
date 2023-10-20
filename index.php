@@ -1,7 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Your head content -->
+    <title>CrudApp</title>
+    <style>
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,400;0,500;0,600;0,700;0,800;1,600&display=swap');
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Poppins', sans-serif;
+            }
+    </style>
 </head>
 <body>
     <?php
@@ -47,8 +60,6 @@
 
             $updateMode = false;
         }
-
-        // Reset the flag for "Add" mode
         
     }
 
