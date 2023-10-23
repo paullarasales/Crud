@@ -17,64 +17,66 @@
     </style>
 </head>
 <body>
-    <?php
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-    require_once "dbcon.php";
+require_once "dbcon.php";
 
-    $updateMode = false;
+$fname = $lname = $position = "";
 
-    if (isset($_POST['submit'])) {
-        if (isset($_POST['update-mode'])) {
-            // Update the record
-            $id = $_POST['update-mode'];
-            $fname = $_POST['fname'];
-            $lname = $_POST['lname'];
-            $position = $_POST['position'];
+$updateMode = false;
 
-            $query = "UPDATE information SET fname=:fname, lname=:lname, position=:position WHERE id=:id";
-            $stmt = $conn->prepare($query);
-            $stmt->bindParam(':fname', $fname);
-            $stmt->bindParam(':lname', $lname);
-            $stmt->bindParam(':position', $position);
-            $stmt->bindParam(':id', $id);
-            $stmt->execute();
+if (isset($_POST['submit'])) {
+    if (isset($_POST['update-mode'])) {
+        // Update the record
+        $id = $_POST['update-mode'];
+        $fname = isset($_POST['fname']) ? $_POST['fname'] : "";
+        $lname = isset($_POST['lname']) ? $_POST['lname'] : "";
+        $position = isset($_POST['position']) ? $_POST['position'] : "";
 
-            
-            header("Location: index.php");
-            
-        } else {
-            $fname = $_POST['fname'];
-            $lname = $_POST['lname'];
-            $position = $_POST['position'];
+        $query = "UPDATE information SET fname=:fname, lname=:lname, position=:position WHERE id=:id";
+        $stmt = $conn->prepare($query);
+        $stmt->bindParam(':fname', $fname);
+        $stmt->bindParam(':lname', $lname);
+        $stmt->bindParam(':position', $position);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
 
-            $query = "INSERT INTO information (fname, lname, position) VALUES (:fname, :lname, :position)";
-            $stmt = $conn->prepare($query);
-            $stmt->bindParam(':fname', $fname);
-            $stmt->bindParam(':lname', $lname);
-            $stmt->bindParam(':position', $position);
-            $stmt->execute();
+        header("Location: index.php");
+    } else {
+        $fname = isset($_POST['fname']) ? $_POST['fname'] : "";
+        $lname = isset($_POST['lname']) ? $_POST['lname'] : "";
+        $position = isset($_POST['position']) ? $_POST['position'] : "";
 
-            echo "Record added successfully.";
-            header("Location: index.php");
-        }
-        
+        $query = "INSERT INTO information (fname, lname, position) VALUES (:fname, :lname, :position)";
+        $stmt = $conn->prepare($query);
+        $stmt->bindParam(':fname', $fname);
+        $stmt->bindParam(':lname', $lname);
+        $stmt->bindParam(':position', $position);
+        $stmt->execute();
+
+        echo "Record added successfully.";
+        header("Location: index.php");
     }
+}
 
-    if (isset($_GET['id'])) {
-        $id = $_GET['id'];
-        $query = "SELECT * FROM information WHERE id = $id";
-        $stmt = $conn->query($query);
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    $query = "SELECT * FROM information WHERE id = $id";
+    $stmt = $conn->query($query);
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $fname = $data['fname'];
-        $lname = $data['lname'];
-        $position = $data['position'];
+    if (count($data) > 0) {
+        $row = $data[0];
+        $fname = $row['fname'];
+        $lname = $row['lname'];
+        $position = $row['position'];
 
         $updateMode = true;
     }
-    ?>
+}
+?>
 
     <?php if (!$updateMode) : ?>
         <form action="" method="post">
