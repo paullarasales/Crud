@@ -19,13 +19,10 @@
 <body>
     <?php
     error_reporting(E_ALL);
-    ini_set('display errors', 1);
+    ini_set('display_errors', 1);
+
     require_once "dbcon.php";
 
-    // Initialize variables
-    $fname = '';
-    $lname = '';
-    $position = '';
     $updateMode = false;
 
     if (isset($_POST['submit'])) {
@@ -45,52 +42,49 @@
             $stmt->execute();
 
             
-
-            $updateMode = false;
+            header("Location: index.php");
+            
         } else {
-            // Insert a new record
             $fname = $_POST['fname'];
             $lname = $_POST['lname'];
             $position = $_POST['position'];
 
-            $query = "INSERT INTO information (fname, lname, position) VALUES ('$fname', '$lname', '$position')";
-            $conn->exec($query);
+            $query = "INSERT INTO information (fname, lname, position) VALUES (:fname, :lname, :position)";
+            $stmt = $conn->prepare($query);
+            $stmt->bindParam(':fname', $fname);
+            $stmt->bindParam(':lname', $lname);
+            $stmt->bindParam(':position', $position);
+            $stmt->execute();
 
             echo "Record added successfully.";
-
-            $updateMode = false;
+            header("Location: index.php");
         }
         
     }
 
     if (isset($_GET['id'])) {
-        // Fetch data for an existing record for updating
         $id = $_GET['id'];
         $query = "SELECT * FROM information WHERE id = $id";
         $stmt = $conn->query($query);
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Pre-fill the form fields with existing data
         $fname = $data['fname'];
         $lname = $data['lname'];
         $position = $data['position'];
 
-        // Set the flag for "Update" mode
         $updateMode = true;
     }
     ?>
 
     <?php if (!$updateMode) : ?>
-        <!-- Display the form for adding records -->
         <form action="" method="post">
-            First Name: <input type="text" name="fname" value=""><br><br>
-            Last Name: <input type="text" name="lname" value=""><br><br>
-            Position: <input type="text" name="position" value=""><br><br>
+            First Name: <input type="text" name="fname"><br><br>
+            Last Name: <input type="text" name="lname"><br><br>
+            Position: <input type="text" name="position"><br><br>
             <input type="submit" name="submit" value="Add">
         </form>
     <?php else : ?>
-        <!-- Display the form for updating records on the same page -->
-        <form action="" method="post">
+        <form action="?id=<?php echo $id; ?>" method="post">
             <input type="hidden" name="update-mode" value="<?php echo $id; ?>">
             First Name: <input type="text" name="fname" value="<?php echo $fname; ?>"><br><br>
             Last Name: <input type="text" name="lname" value="<?php echo $lname; ?>"><br><br>
@@ -123,7 +117,7 @@
                                 <input type='submit' value='Update'>
                             </form>
                         </td>";
-                        echo "<td><a href='delete.php?id=" . $row["id"] . "'>Delete</a></td>";
+                        echo "<td><button class='del-btn'><a href='delete.php?id=" . $row["id"] . "'>Delete</a></button></td>";
                         echo "</tr>";
                     }
 

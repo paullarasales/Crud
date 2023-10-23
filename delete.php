@@ -30,9 +30,6 @@
                 $stmt->bindParam(':id', $id);
 
                 if ($stmt->execute()) {
-                    // echo "Deleted successfully";
-                    // echo "<h1> Go back to main page </h1>";
-                    // echo "<a href='index.php'> Click here </a>";
                     header("Location: index.php");
                 } else {
                     echo "Error Deleting record: " . $stmt->errorInfo()[2];
