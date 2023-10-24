@@ -77,6 +77,53 @@ if (isset($_GET['id'])) {
     $updateMode = true;
 }
 ?>
+    
+    <form action="" method="get">
+        Search: <input type="text" name="search" placeholder="Search by First Name">
+        <input type="submit" value="Search">
+    </form>
+    <div class="search-result">
+    <?php
+        if(isset($_GET["search"])) {
+            $search = $_GET["search"];
+            $query = "SELECT * FROM information WHERE fname LIKE :search OR lname LIKE :search OR position LIKE :search ORDER BY fname";
+            $stmt = $conn->prepare($query);
+            $stmt->bindValue(':search', "%$search%");
+            $stmt->execute();
+
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (count($data) > 0) {
+                echo "<h2>Seach Results:</h2>";
+                echo "<table border='1'>";
+                echo "<tr><th>First Name</th><th>Last Name</th><th>Position</th></tr>";
+
+                foreach($data as $row) {
+                    echo "<tr>";
+                    echo "<td>" . $row["fname"] . "</td>";
+                    echo "<td>" . $row["lname"] . "</td>";
+                    echo "<td>" . $row["position"] . "</td>";
+                    echo "<td>
+                        <form action='' method='get'>
+                        <input type='hidden' name='id' value='" . $row["id"] . "'>
+                        <input type='submit' value='Update'>
+                        </form>
+                    </td>";
+                    echo "<td>
+                        <form action='delete.php' method='get'>
+                        <input type='hidden' name='id' value='" . $row["id"] . "'>
+                        <input type='submit' value='Delete'>
+                        </form>
+                    </td>";
+                    echo "</tr>";
+                }
+                echo "</table>";
+            } else {
+                echo "No Result Found.";
+            }
+        }
+    ?>
+    </div>
 
     <?php if (!$updateMode) : ?>
         <form action="" method="post">
