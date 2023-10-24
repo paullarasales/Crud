@@ -29,11 +29,11 @@ $updateMode = false;
 
 if (isset($_POST['submit'])) {
     if (isset($_POST['update-mode'])) {
-        // Update the record
+        
         $id = $_POST['update-mode'];
-        $fname = isset($_POST['fname']) ? $_POST['fname'] : "";
-        $lname = isset($_POST['lname']) ? $_POST['lname'] : "";
-        $position = isset($_POST['position']) ? $_POST['position'] : "";
+        $fname = $_POST["fname"];
+        $lname = $_POST["lname"];
+        $position = $_POST["position"];
 
         $query = "UPDATE information SET fname=:fname, lname=:lname, position=:position WHERE id=:id";
         $stmt = $conn->prepare($query);
@@ -45,9 +45,9 @@ if (isset($_POST['submit'])) {
 
         header("Location: index.php");
     } else {
-        $fname = isset($_POST['fname']) ? $_POST['fname'] : "";
-        $lname = isset($_POST['lname']) ? $_POST['lname'] : "";
-        $position = isset($_POST['position']) ? $_POST['position'] : "";
+        $fname = $_POST["fname"];
+        $lname = $_POST["lname"];
+        $position = $_POST["position"];
 
         $query = "INSERT INTO information (fname, lname, position) VALUES (:fname, :lname, :position)";
         $stmt = $conn->prepare($query);
@@ -63,18 +63,18 @@ if (isset($_POST['submit'])) {
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $query = "SELECT * FROM information WHERE id = $id";
-    $stmt = $conn->query($query);
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $query = "SELECT * FROM information WHERE id=:id";
+    $stmt = $conn->prepare($query);
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
 
-    if (count($data) > 0) {
-        $row = $data[0];
-        $fname = $row['fname'];
-        $lname = $row['lname'];
-        $position = $row['position'];
+    $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $updateMode = true;
-    }
+    $fname = $data["fname"];
+    $lname = $data["lname"];
+    $position = $data["position"];
+
+    $updateMode = true;
 }
 ?>
 
